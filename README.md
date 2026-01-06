@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Advanced Data Fetching in Next.js (App Router)
 
-## Getting Started
+## Rendering Strategies Used
 
-First, run the development server:
+### Static Rendering (SSG)
+Page: /about
+Technique: export const revalidate = false
+Reason: Content rarely changes, fastest load time
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Dynamic Rendering (SSR)
+Page: /dashboard
+Technique: dynamic = 'force-dynamic' and cache: 'no-store'
+Reason: Requires real-time, user-specific data
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Hybrid Rendering (ISR)
+Page: /news
+Technique: export const revalidate = 60
+Reason: Balances freshness with performance
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Impact on Performance, Scalability, and Freshness
 
-## Learn More
+**SSG** offers best performance and scalability but outdated data
+**SSR** ensures fresh data but increases server cost
+**ISR** provides a balance by refreshing data periodically
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Case Study: DailyEdge News Portal
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Using **SSR everywhere** caused high server cost and slower loads.
+A better solution:
+Homepage → Static (SSG)
+Breaking News → ISR (revalidate every 30–60 seconds)
+User Dashboard → SSR
 
-## Deploy on Vercel
+This balances speed, freshness, and cost.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Reflection
+
+If the app had 10x more users:
+SSR would be limited to user-specific pages
+Static and ISR would handle most traffic
+This reduces cost and improves scalability
