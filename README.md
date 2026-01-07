@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Advanced Data Fetching in Next.js (App Router)
 
-## Getting Started
+## Rendering Strategies Implemented
 
-First, run the development server:
+### Static Rendering (SSG)
+**Page:** /about
+**Implementation:** export const revalidate = false
+**Why Chosen:**  
+  The content on this page is informational and does not change frequently. Static rendering provides the fastest load times and scales efficiently with zero server cost per request.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Dynamic Rendering (SSR)
+**Page:** /dashboard
+**Implementation:**  
+  export const dynamic = 'force-dynamic'  
+  fetch(..., { cache: 'no-store' })
+**Why Chosen:**  
+  This page displays real-time, user-specific data that must always be up to date. Server-side rendering ensures data freshness on every request, even though it increases server usage.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Hybrid Rendering (ISR)
+**Page:** /news
+**Implementation:** export const revalidate = 60
+**Why Chosen:**  
+  News content needs to stay relatively fresh but does not require real-time updates. Incremental Static Regeneration allows the page to remain fast while updating periodically in the background.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Impact on Performance, Scalability, and Data Freshness
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Static Rendering (SSG):**  
+  Delivers the best performance and scalability but may serve outdated data if content changes frequently.
+**Dynamic Rendering (SSR):**  
+  Guarantees the freshest data but increases server load and operational cost.
+**Hybrid Rendering (ISR):**  
+  Provides a balance by combining fast static delivery with scheduled data updates.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Choosing the right strategy ensures optimal user experience while controlling infrastructure cost.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Case Study: DailyEdge News Portal
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+DailyEdge initially used static rendering for all pages, resulting in outdated “Breaking News” content. Switching everything to server-side rendering fixed freshness issues but caused slower page loads and higher hosting costs.
+
+### Optimized Approach:
+**Homepage:** Static Rendering (SSG) for fast load times
+**Breaking News Sec**
+
+
+## Environment-Aware Builds
+
+This project supports development, staging, and production environments using separate `.env` files.
+
+### Environments
+- Development: Local testing
+- Staging: Pre-production validation
+- Production: Live deployment
+
+### Secrets Management
+All sensitive values are stored using GitHub Secrets and injected during CI/CD builds.
+
+### Security Measures
+- `.env` files are gitignored
+- Only `.env.example` is tracked
+- No secrets are hardcoded
+
+### Why This Matters
+Multi-environment setups prevent accidental production issues, improve CI/CD reliability, and follow industry DevOps standards.
